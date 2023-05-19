@@ -12,7 +12,7 @@ use std::cmp::Ordering;
 /// extended-precision real or double-precision complex case. Thus, the packed form
 /// generally requires far less storage in practical computations, where the vectors,
 /// at least at the beginning of the computation, are far less dense than 25%.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct PackedVec {
     /// Store the index of the non-zero data
     index: Vec<usize>,
