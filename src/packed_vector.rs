@@ -11,7 +11,7 @@
 /// generally requires far less storage in practical computations, where the vectors,
 /// at least at the beginning of the computation, are far less dense than 25%.
 #[derive(Clone)]
-pub struct PackedSparseVec {
+pub struct PackedVec {
     /// Store the index of the non-zero data
     index: Vec<usize>,
     /// Store the non-zero data
@@ -21,13 +21,13 @@ pub struct PackedSparseVec {
     full_length: usize,
 }
 
-impl Default for PackedSparseVec {
+impl Default for PackedVec {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl PackedSparseVec {
+impl PackedVec {
     /// Create a empty PackedSparseVec to represent a sparse vector.
     pub fn new() -> Self {
         Self {
@@ -112,7 +112,7 @@ impl PackedSparseVec {
     }
 }
 
-impl std::ops::Mul for PackedSparseVec {
+impl std::ops::Mul for PackedVec {
     type Output = f64;
 
     /// Inner product of two packed vectors
