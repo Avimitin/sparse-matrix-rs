@@ -140,3 +140,48 @@ impl std::ops::Mul for PackedVec {
         product
     }
 }
+
+#[test]
+fn test_packed_vector() {
+    #[rustfmt::skip]
+    let x = vec![
+        0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0, 2.0,
+        0.0, 0.0, 3.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 1.0, 0.0,
+    ];
+
+    let mut packed_x = PackedVec::gather(&x);
+    assert_eq!(packed_x.full_length, x.len());
+    assert_eq!(packed_x.data, [1.0, 2.0, 3.0, 1.0]);
+    assert_eq!(packed_x.index, [6, 9, 12, 18]);
+    assert!(!packed_x.is_empty());
+    assert_eq!(packed_x.len(), 4);
+
+    #[rustfmt::skip]
+    let y = vec![
+        0.0, 1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 7.0, 2.0,
+        0.0, 0.0, 2.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0, 0.0,
+    ];
+
+    let packed_y = PackedVec::gather(&y);
+
+    let inner_product = packed_x.clone() * packed_y.clone();
+    assert_eq!(inner_product, 11.0);
+
+    packed_x.mul_add(&packed_y, 32.0);
+    assert_eq!(
+        packed_x.data,
+        [
+            1.0 + 1.0 * 32.0,
+            2.0 + 2.0 * 32.0,
+            3.0 + 2.0 * 32.0,
+            1.0,
+            1.0 * 32.0,
+            7.0 * 32.0,
+            1.0 * 32.0
+        ]
+    )
+}
