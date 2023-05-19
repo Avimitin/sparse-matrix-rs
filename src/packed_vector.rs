@@ -111,3 +111,32 @@ impl PackedSparseVec {
         }
     }
 }
+
+impl std::ops::Mul for PackedSparseVec {
+    type Output = f64;
+
+    /// Inner product of two packed vectors
+    fn mul(self, rhs: Self) -> Self::Output {
+        let mut product = 0.0;
+        let mut kx = 0;
+        let mut ky = 0;
+
+        loop {
+            if kx == self.len() && ky == rhs.len() {
+                break;
+            }
+
+            if self.index[kx] == self.index[ky] {
+                product += self.data[kx] * rhs.data[ky];
+                kx += 1;
+                ky += 1;
+            } else if ky > kx {
+                kx += 1;
+            } else {
+                ky += 1;
+            }
+        }
+
+        product
+    }
+}
