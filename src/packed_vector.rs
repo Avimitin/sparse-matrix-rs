@@ -79,9 +79,8 @@ impl PackedVec {
     /// For example, `x_i` is a index for the full-length vector X and `x_k` is a index for the
     /// packed vector.
     pub fn mul_add(&mut self, y_vec: &Self, alpha: f64) {
-        let mut tmp = std::iter::repeat(None)
-            .take(self.full_length)
-            .collect::<Vec<_>>();
+        // Use a helper storage for flagging non-zero entry in the Y vector.
+        let mut tmp = vec![None; self.full_length];
 
         // #1: Store the y_vec data index
 
