@@ -76,7 +76,7 @@ impl PackedVec {
     /// and the actual index of the full-length vector, I use `k` denote that it is the index of
     /// packed vector and `i` to denote that it is the index of the actual vector.
     ///
-    /// For example, `x_i` is a index for the full-length vector X and `x_k` is a index for the
+    /// For example, `ix` is a index for the full-length vector X and `kx` is a index for the
     /// packed vector.
     pub fn mul_add(&mut self, y_vec: &Self, alpha: f64) {
         // Use a helper storage for flagging non-zero entry in the Y vector.
@@ -85,19 +85,19 @@ impl PackedVec {
         // #1: Store the y_vec data index
 
         // for each entry Y[k], place its position in the vector tmp[k].
-        for k in 0..y_vec.len() {
-            let y_i = y_vec.index[k];
-            tmp[y_i] = Some(k);
+        for ky in 0..y_vec.len() {
+            let iy = y_vec.index[ky];
+            tmp[iy] = Some(ky);
         }
 
         // #2: For existing entry in x_vec, multiply the y vector and add it into x.
 
         // Scan the X vector, for each entry X[i], check tmp[i] to get the packed vector index Y_k.
         // If the index is not None, use it to find the value of Y[i], and reset tmp[k] to None.
-        for k in 0..self.len() {
-            let x_i = self.index[k];
-            if let Some(y_k) = tmp[x_i].take() {
-                self.data[k] += alpha * y_vec.data[y_k];
+        for kx in 0..self.len() {
+            let ix = self.index[kx];
+            if let Some(ky) = tmp[ix].take() {
+                self.data[kx] += alpha * y_vec.data[ky];
             }
         }
 
@@ -105,11 +105,11 @@ impl PackedVec {
 
         // Scan the Y vector. For each entry Y[i] check tmp[i]. If it is not None, add a new
         // component with value `Alpha * Y[i]` to the packed form of X. Reset tmp[i] to None.
-        for k in 0..y_vec.len() {
-            let y_i = y_vec.index[k];
-            if tmp[y_i].take().is_some() {
-                self.data.push(alpha * y_vec.data[k]);
-                self.index.push(y_i);
+        for ky in 0..y_vec.len() {
+            let iy = y_vec.index[ky];
+            if tmp[iy].take().is_some() {
+                self.data.push(alpha * y_vec.data[ky]);
+                self.index.push(iy);
             }
         }
     }
