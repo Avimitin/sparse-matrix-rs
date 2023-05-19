@@ -62,6 +62,19 @@ impl PackedVec {
         }
     }
 
+    /// Scatter is a special verb describing the transformation from packed vector to full-length
+    /// array.
+    pub fn scatter(&self) -> Vec<f64> {
+        let mut full_len_v = vec![0.0; self.full_length];
+
+        for kx in 0..self.len() {
+            let ix = self.index[kx];
+            full_len_v[ix] = self.data[kx];
+        }
+
+        full_len_v
+    }
+
     /// Return the amount of the non-zero component
     pub fn len(&self) -> usize {
         self.data.len()
@@ -192,5 +205,8 @@ fn test_packed_vector() {
             7.0 * 32.0,
             1.0 * 32.0
         ]
-    )
+    );
+
+    let scatter_back = packed_y.scatter();
+    assert_eq!(y, scatter_back);
 }
