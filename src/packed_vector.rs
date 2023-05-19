@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 /// A sparse vector may be held in a full-length vector of storage.
 /// But to economize in storage, we may pack the vector by holding the entries as real, interger
 /// pairs. Here we implement this idea by using a f64 array to store the data, and a usize array to
@@ -122,18 +124,24 @@ impl std::ops::Mul for PackedVec {
         let mut ky = 0;
 
         loop {
-            if kx == self.len() && ky == rhs.len() {
+            if kx == self.len() || ky == rhs.len() {
                 break;
             }
 
-            if self.index[kx] == self.index[ky] {
-                product += self.data[kx] * rhs.data[ky];
-                kx += 1;
-                ky += 1;
-            } else if ky > kx {
-                kx += 1;
-            } else {
-                ky += 1;
+            let ix = self.index[kx];
+            let iy = rhs.index[ky];
+            match ix.cmp(&iy) {
+                Ordering::Equal => {
+                    product += self.data[kx] * rhs.data[ky];
+                    kx += 1;
+                    ky += 1;
+                }
+                Ordering::Greater => {
+                    ky += 1;
+                }
+                Ordering::Less => {
+                    kx += 1;
+                }
             }
         }
 
