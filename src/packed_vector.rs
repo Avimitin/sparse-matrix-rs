@@ -93,7 +93,15 @@ impl PackedVec {
     /// packed vector.
     pub fn mul_add(&mut self, y_vec: &Self, alpha: f64) {
         // Use a helper storage for flagging non-zero entry in the Y vector.
+        //
+        // There are two approch.
+        //  * One is using the full-length vector for all time manipulation. This is simpler
+        //  implementation.
         let mut tmp = vec![None; self.full_length];
+
+        //  * The second one is to use a vector only spanning from the first entry to the second
+        //  entry. In some case, this can save much space comparing to the full-length vector.
+        //  TODO: Implement a shrink vector for holding temporary index entry.
 
         // #1: Store the y_vec data index
 
